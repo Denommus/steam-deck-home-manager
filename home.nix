@@ -8,6 +8,7 @@ in
   home.stateVersion = "22.05";
 
   home.packages = (with pkgs; [
+    myAspell
     nix
     nettools
     bashInteractive
@@ -15,6 +16,8 @@ in
     rust-analyzer
     fira-code
     fira-code-symbols
+    texlive.combined.scheme-full
+    python310Packages.pygments
   ]);
 
   home.sessionPath = [
