@@ -18,6 +18,8 @@ in
     fira-code-symbols
     texlive.combined.scheme-full
     python310Packages.pygments
+    exercism
+    stack
   ]);
 
   home.sessionPath = [
