@@ -25,12 +25,6 @@ in
       config = builtins.readFile ./emacs-configs/bbdb.el;
     };
 
-    helm-config = {
-      enable = true;
-      demand = true;
-      after = [ "helm" ];
-    };
-
     helm = {
       enable = true;
       demand = true;
