@@ -13,7 +13,6 @@ in
     nettools
     bashInteractive
     rustup
-    rust-analyzer
     fira-code
     fira-code-symbols
     texlive.combined.scheme-full
