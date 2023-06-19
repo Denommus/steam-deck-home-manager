@@ -33,7 +33,7 @@ in
   programs.emacs.enable = true;
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
   programs.emacs.package = pkgs.emacs.override {
-    nativeComp = true;
+    withNativeCompilation = true;
   };
 
   programs.bash = {
