@@ -512,5 +512,9 @@ in
       demand = true;
       init = "(global-fira-code-mode)";
     };
+
+    sqlite3 = {
+      enable = true;
+    };
   };
 }
