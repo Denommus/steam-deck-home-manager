@@ -4,8 +4,8 @@ let
 in
 {
   home.username = "deck";
-  home.homeDirectory = "/run/media/mmcblk0p1/nix/home";
   home.stateVersion = "22.05";
+  home.homeDirectory = "/home/deck";
 
   home.packages = (with pkgs; [
     myAspell
