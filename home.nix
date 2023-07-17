@@ -21,13 +21,6 @@ in
     stack
   ]);
 
-  home.sessionPath = [
-    "/run/media/mmcblk0p1/nix/home/.local/share/solana/install/active_release/bin"
-  ];
-  home.sessionVariables = {
-    NEON_REVISION = 1;
-  };
-
   programs.home-manager.enable = true;
   programs.emacs.enable = true;
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
