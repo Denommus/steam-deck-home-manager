@@ -33,7 +33,6 @@ in
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
   programs.emacs.package = pkgs.emacs.override {
     withNativeCompilation = true;
-    withSQLite3 = true;
   };
 
   programs.bash = {
