@@ -48,4 +48,19 @@ in
   };
 
   fonts.fontconfig.enable = true;
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+    history.extended = true;
+    oh-my-zsh = {
+      enable = true;
+      theme = "agnoster";
+      plugins = [
+        "git"
+        "sudo"
+      ];
+    };
+  };
 }
