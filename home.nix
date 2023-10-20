@@ -21,6 +21,10 @@ in
     stack
   ]);
 
+  home.sessionVariables = {
+    PATH = "/home/deck/.local/share/solana/install/active_release/bin:$PATH";
+  };
+
   programs.home-manager.enable = true;
   programs.emacs.enable = true;
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
