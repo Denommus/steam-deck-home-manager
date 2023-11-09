@@ -48,6 +48,7 @@ in
     extraConfig = {
       pull.ff = "only";
       init.defaultBranch = "main";
+      github.user = "Denommus";
     };
   };
 
