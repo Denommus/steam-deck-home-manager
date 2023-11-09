@@ -19,6 +19,8 @@ in
     python310Packages.pygments
     exercism
     stack
+    openjdk
+    plantuml
   ]);
 
   home.sessionVariables = {
