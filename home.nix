@@ -30,7 +30,7 @@ in
   programs.home-manager.enable = true;
   programs.emacs.enable = true;
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
-  programs.emacs.package = pkgs.emacs.override {
+  programs.emacs.package = pkgs.emacs29.override {
     withNativeCompilation = true;
   };
 
