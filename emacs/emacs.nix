@@ -74,7 +74,6 @@ in
     flycheck = {
       enable = true;
       demand = true;
-      after = [ "nix-sandbox" ];
       command = [
         "global-flycheck-mode"
       ];
@@ -84,36 +83,23 @@ in
 
     flycheck-projectile = {
       enable = true;
-      after = [ "flycheck" "projectile" ];
     };
 
-    nix-sandbox = {
+    # direnv = {
+    #   enable = true;
+    #   config = "(direnv-mode)";
+    # };
+
+    envrc = {
       enable = true;
-      demand = true;
-      command = [
-        "nix-current-sandbox"
-        "nix-executable-find"
-        "nix-shell-command"
+      hook = [
+        "(after-init . envrc-global-mode)"
       ];
-      after = [ "nix-mode" ];
-      package = (epkgs: epkgs.nix-sandbox.overrideAttrs (old: {
-        patches = (old.patches or []) ++ [
-          (pkgs.fetchpatch {
-            url = "https://github.com/Denommus/nix-emacs/commit/bd07a9cc2ecb0160db7f12b1512d09bfcae31d1f.patch";
-            sha256 = "sha256-FiAq6iejpODCnm+J/2zSuGXxohuaRCpjdxHtRZESiX0=";
-          })
-        ];
-      }));
-    };
-
-    nix-buffer = {
-      enable = true;
     };
 
     smartparens = {
       enable = true;
       demand = true;
-      after = [ "hydra" ];
       command = [
         "smartparens-mode"
         "smartparens-strict-mode"
@@ -160,6 +146,10 @@ in
       defer = true;
       mode = [
         "\"\\\\.tsx?\\\\'\""
+      ];
+      hook = [
+        "(typescript-mode . lsp)"
+        "(typescript-mode . smartparens-mode)"
       ];
     };
 
@@ -249,7 +239,6 @@ in
     org = {
       package = "org-plus-contrib";
       enable = true;
-      after = [ "flyspell" ];
       command = [
         "deactivate-c-tab"
       ];
@@ -276,37 +265,31 @@ in
 
     org-bullets = {
       enable = true;
-      after = [ "org" ];
       command = [ "org-bullets-mode" ];
       config = "(add-hook 'org-mode-hook #'org-bullets-mode)";
     };
 
     ox = {
       enable = true;
-      after = [ "org" ];
     };
 
     org-ref = {
       enable = true;
-      after = [ "org" ];
     };
 
     ox-epub = {
       enable = true;
-      after = [ "org" "ox" ];
       init = "(add-to-list 'org-export-backends 'epub)";
     };
 
     ox-latex = {
       enable = true;
-      after = [ "org" "ox" ];
       config = builtins.readFile ./emacs-configs/ox-latex.el;
     };
 
     dune = {
       enable = true;
       defer = true;
-      after = [ "smartparens" ];
       hook = [ "(dune-mode . enable-smartparens-mode)" ];
     };
 
@@ -318,24 +301,37 @@ in
       init = "(editorconfig-mode 1)";
     };
 
-    helm-flyspell = {
-      enable = true;
-      after = [ "helm" ];
-    };
+    # helm-flyspell = {
+    #   enable = true;
+    # };
 
-    flyspell = {
+    # flyspell = {
+    #   enable = true;
+    #   bindLocal = {
+    #     flyspell-mode-map = {
+    #       "C-;" = "helm-flyspell-correct";
+    #     };
+    #   };
+    # };
+
+    jinx = {
       enable = true;
-      after = [ "helm-flyspell" ];
-      bindLocal = {
-        flyspell-mode-map = {
-          "C-;" = "helm-flyspell-correct";
-        };
+      hook = [
+        "(emacs-startup . global-jinx-mode)"
+      ];
+      bind = {
+        "M-$" = "jinx-correct";
+        "C-M-$" = "jinx-languages";
       };
     };
 
     nix-mode = {
       enable = true;
       demand = true;
+      hook = [
+        "(nix-mode . lsp)"
+        "(nix-mode . smartparens-mode)"
+      ];
     };
 
     nixos-options = {
@@ -368,7 +364,6 @@ in
 
     helm-nixos-options = {
       enable = true;
-      after = [ "helm" "nixos-options" ];
       bind = {
         "C-c n" = "helm-nixos-options";
       };
@@ -390,12 +385,36 @@ in
               "M-." = "xref-find-definitions";
         };
       };
-      init = builtins.readFile ./emacs-inits/lsp.el;
+      config = ''
+        (customize-set-variable 'lsp-prefer-flymake nil)
+        (customize-set-variable 'lsp-rust-clippy-preference "on")
+      '';
+    };
+
+    eglot = {
+      enable = true;
+      bindLocal = {
+        eglot-mode-map = {
+          "C-c C-t" = "eglot-find-typeDefinition";
+          "C-c C-r" = "eglot-rename";
+          "C-c C-i" = "eglot-find-typeDefinition";
+          "C-c t" = "eglot-find-typeDefinition";
+          "C-c r" = "eglot-rename";
+          "C-c i" = "eglot-find-typeDefinition";
+          "M-." = "xref-find-definitions";
+          "C-." = "xref-find-references";
+        };
+      };
+
+      config = ''
+        (customize-set-variable 'eglot-autoshutdown t)
+        (customize-set-variable 'eglot-extend-to-xref t)
+        (customize-set-variable 'eglot-send-changes-idle-time 2.0)
+      '';
     };
 
     lsp-haskell = {
       enable = true;
-      after = [ "lsp-mode" ];
     };
 
     lsp-ui = {
@@ -408,15 +427,23 @@ in
 
     reason-mode = {
       enable = true;
-      after = [ "lsp-mode" "nix-sandbox" ];
       defer = true;
-      init = builtins.readFile ./emacs-inits/reason-mode.el;
+
+      hook = [
+        "(reason-mode . smartparens-mode)"
+        "(reason-mode . lsp)"
+        "(before-save . refmt-before-save)"
+      ];
     };
 
     tuareg = {
       enable = true;
-      after = [ "lsp-mode" "nix-sandbox" "reason-mode" ];
       defer = true;
+
+      hook = [
+        "(tuareg-mode . smartparens-mode)"
+        "(tuareg-mode . lsp)"
+      ];
     };
 
     multiple-cursors = {
@@ -442,14 +469,14 @@ in
     haskell-mode = {
       enable = true;
       defer = true;
-      after = [ "lsp-haskell" "nix-sandbox" ];
-      init = builtins.readFile ./emacs-inits/haskell-mode.el;
+      hook = [
+        "(haskell-mode . subword-mode)"
+      ];
     };
 
     helm-bbdb = {
       enable = true;
       command = [ "helm-bbdb" ];
-      after = [ "helm" "bbdb" ];
     };
 
     yaml-mode = {
@@ -482,9 +509,14 @@ in
 
     rust-mode = {
       enable = true;
-      after = [ "nix-sandbox" "lsp-mode" "nix-mode" ];
-      command = [ "nix-rust-sandbox-setup" ];
-      init = builtins.readFile ./emacs-inits/rust-mode.el;
+      config = ''
+        (customize-set-variable 'rust-format-on-save t)
+      '';
+      hook = [
+        "(rust-mode . subword-mode)"
+        "(rust-mode . smartparens-mode)"
+        "(rust-mode . lsp)"
+      ];
     };
 
     dockerfile-mode = {
@@ -515,6 +547,43 @@ in
 
     sqlite3 = {
       enable = true;
+    };
+
+    ripgrep = {
+      enable = true;
+    };
+
+    helm-rg = {
+      enable = true;
+    };
+
+    qml-mode = {
+      enable = true;
+    };
+
+    dap-mode = {
+      enable = true;
+      config = ''
+        (require 'dap-lldb)
+        (require 'dap-gdb-lldb)
+
+        (dap-gdb-lldb-setup)
+
+        (dap-register-debug-template "Rust::LLDB Run Configuration"
+                                     (list :type "lldb-vscode"
+                                           :request "launch"
+                                           :name "LLDB::Run"
+                                           :lldbpath "rust-lldb"
+                                           :target nil
+                                           :cwd nil))
+
+        (with-eval-after-load 'dap-mode
+          (setq dap-lldb-debug-program '("/run/current-system/sw/bin/lldb-vscode"))
+	        (setq dap-default-terminal-kind "integrated") ;; Make sure that terminal programs open a term for I/O in an Emacs buffer
+	        (dap-auto-configure-mode +1))
+
+        (require 'dap-ocaml)
+      '';
     };
   };
 }

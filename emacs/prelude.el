@@ -61,6 +61,10 @@
       save-interprogram-paste-before-kill t
       mouse-yank-at-point t)
 
+(setq insert-directory-program "gls")
+(setq dired-use-ls-dired t)
+(setq dired-listing-switches "-al --group-directories-first")
+
 (defun convert-to-underscore ()
   "Convert the region from camelCase to underscore. Does nothing if no region is set."
   (interactive)
@@ -155,48 +159,3 @@
 (defun process-environment-to-exec-path (pe)
   (let ((path (cl-find-if (lambda (x) (string-prefix-p "PATH=" x)) pe)))
     (split-string (cadr (split-string path "=")) ":")))
-
-(defun global-nix-sandbox ()
-  "Set up the nix sandbox env vars for the global environment."
-  (setq process-environment
-        (cl-remove-if #'remove-unneeded-env
-                      (split-string (shell-command-to-string
-                                     (nix-shell-string nil
-                                                       "printenv"))
-                                    "[\n]")))
-  (setq exec-path (process-environment-to-exec-path process-environment)))
-
-
-(add-hook 'after-init-hook #'global-nix-sandbox)
-
-(defun local-nix-sandbox ()
-  "Set up the nix sandbox environment for when there's a nix-sandbox."
-  (add-hook 'hack-local-variables-hook
-            (lambda ()
-              (when (projectile-project-root)
-                (let ((sandbox (nix-find-sandbox (projectile-project-root))))
-                  (when sandbox
-                    (make-local-variable 'process-environment)
-                    (setq process-environment
-                          (cl-remove-if #'remove-unneeded-env
-                                        (split-string (shell-command-to-string
-                                                       (nix-shell-string sandbox
-                                                                         "printenv"))
-                                                      "[\n]")))
-                    (setq exec-path (process-environment-to-exec-path process-environment)))))) -1))
-
-(add-hook 'change-major-mode-hook #'local-nix-sandbox)
-
-(defun lsp-after-local-variables ()
-  "Set up lsp after local variables have been loaded."
-  (add-hook 'hack-local-variables-hook #'lsp-deferred nil t))
-
-(add-hook 'rust-mode-hook #'lsp-after-local-variables)
-
-(add-hook 'nix-mode-hook #'lsp-after-local-variables)
-
-(add-hook 'haskell-mode-hook #'lsp-after-local-variables)
-
-(add-hook 'haskell-literate-mode-hook #'lsp-after-local-variables)
-
-(add-hook 'tuareg-mode-hook #'lsp-after-local-variables)

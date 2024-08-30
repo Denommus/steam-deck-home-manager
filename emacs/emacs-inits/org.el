@@ -2,7 +2,6 @@
 (setq org-agenda-include-diary t)
 (setq org-directory "~/Dropbox/org")
 (setq org-default-notes-file (concat org-directory "/agenda.org"))
-(setq org-agenda-files (list org-default-notes-file))
 (setq org-export-with-toc nil)
 (setq org-confirm-babel-evaluate nil)
 (setq org-capture-templates
