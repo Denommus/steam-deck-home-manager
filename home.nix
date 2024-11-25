@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 let
   myAspell = pkgs.aspellWithDicts (d: [d.en d.pt_BR]);
+  myHunspell = pkgs.hunspellWithDicts [
+    pkgs.hunspellDicts.en-us
+    pkgs.hunspellDicts.en-us-large
+    pkgs.hunspellDicts.pt-br
+  ];
 in
 {
   home.username = "deck";
@@ -9,6 +14,7 @@ in
 
   home.packages = (with pkgs; [
     myAspell
+    myHunspell
     nix
     nettools
     bashInteractive
@@ -30,9 +36,6 @@ in
   programs.home-manager.enable = true;
   programs.emacs.enable = true;
   programs.emacs.init = import ./emacs/emacs.nix { inherit pkgs; };
-  programs.emacs.package = pkgs.emacs29.override {
-    withNativeCompilation = true;
-  };
 
   programs.bash = {
     enable = true;
